@@ -1,4 +1,5 @@
 /turf/open
+	plane = FLOOR_PLANE
 	var/slowdown = 0 //negative for faster, positive for slower
 
 	var/mutable_appearance/wet_overlay
@@ -137,14 +138,10 @@
 			if (!atmos_adjacent_turfs || !atmos_adjacent_turfs[enemy_tile])
 				continue
 
-
-		var/is_active = air.compare(enemy_air)
-
-		if(is_active)
+		if(!excited && air.compare(enemy_air))
 			//testing("Active turf found. Return value of compare(): [is_active]")
-			if(!excited) //make sure we aren't already excited
-				excited = 1
-				SSair.active_turfs |= src
+			excited = TRUE
+			SSair.active_turfs |= src
 	UNSETEMPTY(atmos_adjacent_turfs)
 	if (atmos_adjacent_turfs)
 		src.atmos_adjacent_turfs = atmos_adjacent_turfs
@@ -163,7 +160,7 @@
 	for(var/obj/I in contents)
 		if(I.resistance_flags & FREEZE_PROOF)
 			return
-		if(!(I.flags_2 & FROZEN_2)) //let it go
+		if(!(I.obj_flags & FROZEN))
 			I.make_frozen_visual()
 	for(var/mob/living/L in contents)
 		if(L.bodytemperature <= 50)
